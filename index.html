@@ -5,125 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MoodLink Widget</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
     <style>
-        /* CSS: Оформление в стиле минимализма (для научной статьи) */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f9;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            margin: 0;
-            color: #333;
-        }
-        .container {
-            background: white;
-            padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            width: 100%;
-            max-width: 350px;
-            text-align: center;
-        }
-        h1 { font-size: 1.5rem; margin-bottom: 20px; color: #0088cc; }
-        .slider-group { margin-bottom: 30px; text-align: left; }
-        label { display: block; margin-bottom: 10px; font-weight: 600; }
-        
-        /* Стилизация слайдеров (Инструменты верификации) */
-        input[type=range] {
-            width: 100%;
-            height: 8px;
-            border-radius: 5px;
-            background: #ddd;
-            outline: none;
-            -webkit-appearance: none;
-        }
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
-            background: #0088cc;
-            border-radius: 50%;
-            cursor: pointer;
-        }
-
-        .status-display {
-            padding: 15px;
-            border-radius: 12px;
-            margin-top: 20px;
-            font-weight: bold;
-            transition: all 0.5s ease;
-        }
-        
-        button {
-            background: #0088cc;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 12px;
-            width: 100%;
-            font-size: 1rem;
-            font-weight: bold;
-            margin-top: 20px;
-            cursor: pointer;
-        }
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #f0f2f5; }
+        .container { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: center; width: 80%; }
+        input { width: 100%; margin: 15px 0; }
+        button { background: #0088cc; color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-size: 16px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>MoodLink</h1>
-    <p>Трансляция вашего ресурса</p>
-
-    <div class="slider-group">
-        <label>Уровень энергии: <span id="energy-val">50</span>%</label>
-        <input type="range" id="energy" min="0" max="100" value="50">
-    </div>
-
-    <div id="status-box" class="status-display" style="background-color: #fff4cc;">
-        СОСТОЯНИЕ: СРЕДНЕЕ
-    </div>
-
-    <button id="send-data">ОБНОВИТЬ СТАТУС</button>
+    <h2>MoodLink</h2>
+    <p>Энергия: <span id="energyVal">50</span>%</p>
+    <input type="range" id="energySlider" min="0" max="100" value="50" oninput="energyVal.innerText = this.value">
+    
+    <p>Настроение: <span id="moodVal">50</span>%</p>
+    <input type="range" id="moodSlider" min="0" max="100" value="50" oninput="moodVal.innerText = this.value">
+    
+    <br>
+    <button id="sendBtn">Отправить статус</button>
 </div>
 
 <script>
-    // Инициализация Telegram Web App
-    let tg = window.Telegram.WebApp;
-    tg.expand(); // Разворачиваем на все окно
+    let tg = window.Telegram.WebApp; 
+    tg.expand(); // Развернуть на всё окно
 
-    const energySlider = document.getElementById('energy');
-    const energyVal = document.getElementById('energy-val');
-    const statusBox = document.getElementById('status-box');
+    let btn = document.getElementById("sendBtn");
 
-    // Логика изменения цвета (Алгоритм верификации из статьи)
-    energySlider.oninput = function() {
-        let val = this.value;
-        energyVal.innerText = val;
-
-        if (val < 30) {
-            statusBox.style.backgroundColor = "#ffcccc"; // Красный
-            statusBox.innerText = "СТАТУС: ИСТОЩЕНИЕ";
-        } else if (val < 70) {
-            statusBox.style.backgroundColor = "#fff4cc"; // Желтый
-            statusBox.innerText = "СТАТУС: В РАБОТЕ";
-        } else {
-            statusBox.style.backgroundColor = "#ccffcc"; // Зеленый
-            statusBox.innerText = "СТАТУС: В РЕСУРСЕ";
-        }
-    }
-
-    // Отправка данных боту
-    document.getElementById('send-data').onclick = function() {
-        let data = {
-            energy: energySlider.value,
-            status: statusBox.innerText
-        };
-        tg.sendData(JSON.stringify(data)); // Отправляем данные в чат боту
-        tg.close(); // Закрываем виджет
-    }
+    btn.addEventListener("click", function() {
+        let e = document.getElementById("energySlider").value;
+        let m = document.getElementById("moodSlider").value;
+        
+        // Формируем текст сообщения
+        let stat = "⚡ Энергия: " + e + "%, 😊 Настроение: " + m + "%";
+        
+        // ОТПРАВКА ДАННЫХ БОТУ
+        tg.sendData(stat); 
+    });
 </script>
 
 </body>
