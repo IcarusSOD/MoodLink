@@ -28,7 +28,7 @@
 
 <script>
     let tg = window.Telegram.WebApp; 
-    tg.expand(); // Развернуть на всё окно
+    tg.expand(); 
 
     let btn = document.getElementById("sendBtn");
 
@@ -36,11 +36,12 @@
         let e = document.getElementById("energySlider").value;
         let m = document.getElementById("moodSlider").value;
         
-        // Формируем текст сообщения
-        let stat = "⚡ Энергия: " + e + "%, 😊 Настроение: " + m + "%";
+        // ВАЖНО: Отправляем в формате "настроение|энергия", 
+        // чтобы наш Python-код смог это сохранить в базу данных
+        let dataToBot = m + "|" + e;
         
-        // ОТПРАВКА ДАННЫХ БОТУ
-        tg.sendData(stat); 
+        tg.sendData(dataToBot); 
+        tg.close(); // Закрываем окно после отправки
     });
 </script>
 
